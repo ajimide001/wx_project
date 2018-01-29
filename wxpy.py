@@ -19,6 +19,9 @@ DEFAULT_HEADS = {
 def unix_13():
     return int(time.time() * 1000)
 
+def unix_17():
+    return int(time.time() * 10000000)
+
 class WXPY(object):
     def __init__(self):
         self.s = requests.Session()
@@ -90,13 +93,24 @@ class WXPY(object):
         wxuin = html.wxuin.text
         pass_ticket = html.pass_ticket.text
         self.login_xinxi = {
-            'skey':skey,
-            'wxsid':wxsid,
-            'wxuin':wxuin,
-            'pass_ticket':pass_ticket
+            'Skey':skey,
+            'Sid':wxsid,
+            'Uin':wxuin,
+            'DeviceID':pass_ticket
         }
         print(self.login_xinxi)
-
+    def get_user(self):
+        user_url = 'https://wx2.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact?r=1516980473115&seq=0&skey={}'.format(self.login_xinxi['Skey'])
+        res = self.s.get(user_url)
+        res.encoding = 'utf-8'
+        res_json = res.json()
+        for i in res_json['MemberList']:
+            print(i['UserName'])
+            print(i['NickName'])
+            print(i['RemarkName'])
+        # res = self.s.get(user_url)
+        # print(res.encoding)
+        # print(res.content)
 if __name__ == '__main__':
     wx = WXPY()
     # wx.get_index_url()
@@ -106,3 +120,4 @@ if __name__ == '__main__':
     flag = wx.login_status()
     if flag:
         wx.set_cookie()
+        wx.get_user()
